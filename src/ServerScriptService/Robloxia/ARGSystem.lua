@@ -1,8 +1,7 @@
 --[[
 	ARGSystem.lua
-	Giro narrativo: al pasar por la puerta del sótano secreto
-	el jugador "se reinicia" y el mundo cambia a una versión rota / ARG.
-	Todo por código, sin UI compleja.
+	Giro narrativo: al pasar por la puerta del sotano secreto
+	el jugador se reinicia y el mundo cambia a una version rota / ARG.
 ]]
 
 local Players = game:GetService("Players")
@@ -15,12 +14,15 @@ local activated = false
 local classicRoot = nil
 
 local function setClassicLighting()
-	Lighting.Ambient = Color3.fromRGB(140, 140, 140)
-	Lighting.Brightness = 2
-	Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-	Lighting.FogColor = Color3.fromRGB(192, 192, 192)
-	Lighting.FogEnd = 100000
-	Lighting.ClockTime = 14
+	-- 2009 pero con sensacion de que algo no va bien
+	Lighting.Ambient = Color3.fromRGB(110, 105, 120)
+	Lighting.Brightness = 1.6
+	Lighting.OutdoorAmbient = Color3.fromRGB(100, 95, 110)
+	Lighting.FogColor = Color3.fromRGB(160, 155, 170)
+	Lighting.FogEnd = 450
+	Lighting.FogStart = 80
+	Lighting.ClockTime = 16.5 -- atardecer raro
+	Lighting.GeographicLatitude = 20
 end
 
 local function setARGLighting()
@@ -37,7 +39,6 @@ local function createBrokenWorld(parent)
 	broken.Name = MapConfig.ARG.NewMapName
 	broken.Parent = parent
 
-	-- Base oscura
 	local base = Instance.new("Part")
 	base.Name = "BrokenBase"
 	base.Size = Vector3.new(400, 1, 400)
@@ -48,7 +49,6 @@ local function createBrokenWorld(parent)
 	base.TopSurface = Enum.SurfaceType.Smooth
 	base.Parent = broken
 
-	-- Casa distorsionada (solo una, rota)
 	local function makeBrokenPart(name, size, pos, color)
 		local p = Instance.new("Part")
 		p.Name = name
@@ -68,7 +68,6 @@ local function createBrokenWorld(parent)
 	makeBrokenPart("BrokenWallR", Vector3.new(1, 10, 16), Vector3.new(10, 5.5, 0), Color3.fromRGB(70, 40, 35))
 	makeBrokenPart("BrokenRoof", Vector3.new(22, 1, 18), Vector3.new(0, 11, 0), Color3.fromRGB(90, 20, 20))
 
-	-- Carteles glitched
 	local function makeGlitchSign(text, pos)
 		local board = Instance.new("Part")
 		board.Size = Vector3.new(10, 4, 0.5)
@@ -77,11 +76,9 @@ local function createBrokenWorld(parent)
 		board.Color = Color3.fromRGB(10, 10, 10)
 		board.Material = Enum.Material.SmoothPlastic
 		board.Parent = broken
-
 		local gui = Instance.new("SurfaceGui")
 		gui.Face = Enum.NormalId.Front
 		gui.Parent = board
-
 		local label = Instance.new("TextLabel")
 		label.Size = UDim2.new(1, 0, 1, 0)
 		label.BackgroundTransparency = 1
@@ -95,10 +92,9 @@ local function createBrokenWorld(parent)
 	makeGlitchSign("WELCOME TO ROBLOXIA?", Vector3.new(0, 8, -15))
 	makeGlitchSign("HAVE FUN?", Vector3.new(-20, 6, 10))
 	makeGlitchSign("THE BRICKS ARE GONE", Vector3.new(20, 6, 10))
-	makeGlitchSign("YOU SHOULDN'T BE HERE", Vector3.new(0, 5, 20))
+	makeGlitchSign("YOU SHOULDNT BE HERE", Vector3.new(0, 5, 20))
 	makeGlitchSign("2009 NEVER ENDED", Vector3.new(0, 12, 0))
 
-	-- Pilares rotos / escombros
 	for i = 1, 15 do
 		local r = Instance.new("Part")
 		r.Size = Vector3.new(math.random(2, 6), math.random(1, 4), math.random(2, 5))
@@ -110,7 +106,6 @@ local function createBrokenWorld(parent)
 		r.Parent = broken
 	end
 
-	-- Spawn ARG
 	local spawn = Instance.new("SpawnLocation")
 	spawn.Name = "ARG_Spawn"
 	spawn.Size = Vector3.new(6, 1, 6)
@@ -121,7 +116,6 @@ local function createBrokenWorld(parent)
 	spawn.Color = Color3.fromRGB(120, 0, 0)
 	spawn.Parent = broken
 
-	-- Luz roja central
 	local lightPart = Instance.new("Part")
 	lightPart.Size = Vector3.new(1, 1, 1)
 	lightPart.Position = Vector3.new(0, 15, 0)
@@ -141,33 +135,19 @@ end
 function ARGSystem.Activate(player: Player)
 	if activated then return end
 	activated = true
-
 	print("[ARG] Activado por " .. player.Name)
-
-	-- Feedback inmediato
 	local character = player.Character
 	if character and character:FindFirstChild("Humanoid") then
-		local hum = character.Humanoid
-		hum.WalkSpeed = 0
+		character.Humanoid.WalkSpeed = 0
 		task.wait(0.3)
 	end
-
-	-- Destruir mapa clásico
 	if classicRoot and classicRoot.Parent then
 		classicRoot:Destroy()
 	end
-
-	-- Cambiar iluminación
 	setARGLighting()
-
-	-- Crear mundo roto
-	local broken = createBrokenWorld(workspace)
-
-	-- Resetear al jugador
+	createBrokenWorld(workspace)
 	task.wait(MapConfig.ARG.ResetDelay)
 	player:LoadCharacter()
-
-	-- Mensaje en chat (simple)
 	task.delay(1, function()
 		local msg = Instance.new("Message")
 		msg.Text = "Something is wrong with Robloxia..."
@@ -175,7 +155,6 @@ function ARGSystem.Activate(player: Player)
 		task.wait(4)
 		msg:Destroy()
 	end)
-
 	task.delay(8, function()
 		local msg2 = Instance.new("Message")
 		msg2.Text = "2009 never ended."
@@ -188,7 +167,6 @@ end
 function ARGSystem.Setup(classicMapRoot)
 	classicRoot = classicMapRoot
 	setClassicLighting()
-
 	local function onTouched(hit)
 		local character = hit.Parent
 		local player = Players:GetPlayerFromCharacter(character)
@@ -198,7 +176,6 @@ function ARGSystem.Setup(classicMapRoot)
 			end
 		end
 	end
-
 	local function connectDoors(parent)
 		for _, desc in ipairs(parent:GetDescendants()) do
 			if desc:IsA("BasePart") and desc:GetAttribute("IsARGTrigger") then
@@ -206,9 +183,7 @@ function ARGSystem.Setup(classicMapRoot)
 			end
 		end
 	end
-
 	connectDoors(classicMapRoot)
-
 	classicMapRoot.DescendantAdded:Connect(function(desc)
 		if desc:IsA("BasePart") and desc:GetAttribute("IsARGTrigger") then
 			desc.Touched:Connect(onTouched)
