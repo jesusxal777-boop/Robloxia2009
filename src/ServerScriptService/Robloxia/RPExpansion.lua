@@ -258,6 +258,12 @@ local function setAnchored(instance, anchored)
 end
 
 local function weldModelToRoot(model, rootPart, carrier)
+	local target = carrier.CFrame * CFrame.new(0, -0.2, -1.8)
+	if model:IsA("Model") then
+		model:PivotTo(target)
+	else
+		model.CFrame = target
+	end
 	local parts = getParts(model)
 	for _, part in ipairs(parts) do
 		part.Anchored = false
@@ -275,7 +281,6 @@ local function weldModelToRoot(model, rootPart, carrier)
 	carryWeld.Part0 = carrier
 	carryWeld.Part1 = rootPart
 	carryWeld.Parent = rootPart
-	rootPart.CFrame = carrier.CFrame * CFrame.new(0, -0.2, -1.8)
 end
 
 local function bagCount(data)
@@ -542,6 +547,8 @@ local function addJobPrompt(model, jobName)
 	end, 12)
 end
 
+local spawnDeliveryCrate
+
 local function createTechStore(position, parent)
 	local model = Instance.new("Model")
 	model.Name = "RP_TechStore"
@@ -561,6 +568,7 @@ local function createTechStore(position, parent)
 		if data.pendingDelivery then notify(player, "Primero entrega la caja que llevas.") return end
 		if changeMoney(player, -120) then
 			data.pendingDelivery = { kind = "TV", template = "TV", crateTemplate = "Wood Crate" }
+			task.defer(function() if spawnDeliveryCrate then spawnDeliveryCrate(player) end end)
 			notify(player, "TV comprado. Recoge la caja y llévala a tu casa.")
 		end
 	end)
@@ -569,6 +577,7 @@ local function createTechStore(position, parent)
 		if data.pendingDelivery then notify(player, "Primero entrega la caja que llevas.") return end
 		if changeMoney(player, -200) then
 			data.pendingDelivery = { kind = "PC", template = "PC", crateTemplate = "Crate" }
+			task.defer(function() if spawnDeliveryCrate then spawnDeliveryCrate(player) end end)
 			notify(player, "PC comprado. Recoge la caja y llévala a tu casa.")
 		end
 	end)
@@ -580,7 +589,7 @@ local function createCrateFallback(name, parent)
 	return part
 end
 
-local function spawnDeliveryCrate(player)
+spawnDeliveryCrate = function(player)
 	local data = getData(player)
 	if not data.pendingDelivery or data.pendingDelivery.crate then return end
 	local character = player.Character
