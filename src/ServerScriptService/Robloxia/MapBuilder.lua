@@ -1,11 +1,12 @@
 --[[
-	MapBuilder.lua  v0.2
-	Prioridad: casas entrables + sotano usable + roleplay basico
-	Patio de construccion funcional (ladrillos sin anclar)
+	MapBuilder.lua  v0.3
+	ServerStorage: "Bloxy Cola Vending" y "Bloxy"
+	Puertas sin colision, casa sotano marcada, maquinas fuera de puertas
 ]]
 
 local MapConfig = require(script.Parent.MapConfig)
 local AssetRegistry = require(script.Parent.AssetRegistry)
+local ServerStorage = game:GetService("ServerStorage")
 
 local MapBuilder = {}
 
@@ -84,7 +85,36 @@ local function makeTable(position, parent, size)
 	return tbl
 end
 
+local function cloneFromStorage(name, position, parent)
+	local template = ServerStorage:FindFirstChild(name)
+	if not template then
+		warn("[MapBuilder] No se encontro en ServerStorage: \"" .. name .. "\" -> fallback")
+		return nil
+	end
+	print("[MapBuilder] Usando modelo real: " .. name)
+	local clone = template:Clone()
+	clone.Parent = parent
+	if clone:IsA("Model") then
+		local part = clone.PrimaryPart or clone:FindFirstChildWhichIsA("BasePart", true)
+		if part then
+			local offset = position - part.Position
+			for _, d in ipairs(clone:GetDescendants()) do
+				if d:IsA("BasePart") then
+					d.Anchored = true
+					d.CFrame = d.CFrame + offset
+				end
+			end
+		end
+	elseif clone:IsA("BasePart") then
+		clone.Anchored = true
+		clone.Position = position
+	end
+	return clone
+end
+
 local function makeBloxyColaMachine(position, parent)
+	local real = cloneFromStorage("Bloxy Cola Vending", position, parent)
+	if real then return real end
 	local machine = makeModel("BloxyColaMachine", parent)
 	makePart({ Name = "Body", Size = Vector3.new(3.5, 6, 2.2), Position = position + Vector3.new(0, 3, 0), Color = Color3.fromRGB(180, 40, 40), Material = Enum.Material.Plastic, TopSurface = Enum.SurfaceType.Studs, Parent = machine })
 	makePart({ Name = "Top", Size = Vector3.new(3.7, 0.6, 2.4), Position = position + Vector3.new(0, 6.3, 0), Color = Color3.fromRGB(220, 50, 50), Material = Enum.Material.Plastic, Parent = machine })
@@ -104,6 +134,12 @@ local function makeBloxyColaMachine(position, parent)
 	return machine
 end
 
+local function makeBloxyColaCan(position, parent)
+	local real = cloneFromStorage("Bloxy", position, parent)
+	if real then return real end
+	return makePart({ Name = "BloxyCola", Size = Vector3.new(1, 1.6, 1), Position = position + Vector3.new(0, 0.8, 0), Color = Color3.fromRGB(200, 80, 30), Material = Enum.Material.Plastic, Parent = parent })
+end
+
 function MapBuilder.CreateBaseAndPlaza(root)
 	local terrainFolder = makeModel("Terrain", root)
 	local roads = makeModel("Roads", root)
@@ -115,6 +151,8 @@ function MapBuilder.CreateBaseAndPlaza(root)
 		makePart({ Name = "Path" .. i, Size = d.Size, Position = d.Pos, Color = MapConfig.Colors.Path, Material = MapConfig.Materials.Concrete, TopSurface = Enum.SurfaceType.Studs, Parent = roads })
 	end
 	makeSign("WELCOME TO ROBLOXIA!", MapConfig.Layout.PlazaCenter + Vector3.new(0, 9, -22), Vector3.new(18, 7, 1), plaza)
+	makeSign("HAVE FUN?", MapConfig.Layout.PlazaCenter + Vector3.new(-20, 5, 5), Vector3.new(7, 3, 0.5), plaza)
+	makeSign("DONT LOOK BACK", MapConfig.Layout.PlazaCenter + Vector3.new(22, 4, -5), Vector3.new(8, 3, 0.5), plaza)
 	for i = -1, 1, 2 do
 		makePart({ Name = "Bench", Size = Vector3.new(6, 1, 2), Position = MapConfig.Layout.PlazaCenter + Vector3.new(i * 14, 1, 10), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, Parent = plaza })
 		local lamp = makeModel("Lamp", plaza)
@@ -124,13 +162,15 @@ function MapBuilder.CreateBaseAndPlaza(root)
 	for _, offset in ipairs({ Vector3.new(-18, 0, 18), Vector3.new(18, 0, 18), Vector3.new(-18, 0, -12), Vector3.new(18, 0, -12) }) do
 		makeTree(MapConfig.Layout.PlazaCenter + offset, plaza)
 	end
-	makeBloxyColaMachine(MapConfig.Layout.PlazaCenter + Vector3.new(-10, 0, 0), plaza)
-	makeBloxyColaMachine(MapConfig.Layout.PlazaCenter + Vector3.new(10, 0, 0), plaza)
+	makeBloxyColaMachine(MapConfig.Layout.PlazaCenter + Vector3.new(-18, 0, 0), plaza)
+	makeBloxyColaMachine(MapConfig.Layout.PlazaCenter + Vector3.new(18, 0, 0), plaza)
 	makeTable(MapConfig.Layout.PlazaCenter + Vector3.new(0, 0, 8), plaza, Vector3.new(6, 0.4, 3.5))
 	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(-2.5, 0, 6), plaza)
 	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(2.5, 0, 6), plaza)
 	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(-2.5, 0, 10), plaza)
 	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(2.5, 0, 10), plaza)
+	makeBloxyColaCan(MapConfig.Layout.PlazaCenter + Vector3.new(0, 2.4, 8), plaza)
+	makeBloxyColaCan(MapConfig.Layout.PlazaCenter + Vector3.new(1, 2.4, 8.5), plaza)
 	return plaza
 end
 
@@ -150,7 +190,7 @@ function MapBuilder.CreateHappyHome(root)
 		makePart({ Name = "RoofL", Size = Vector3.new(30, 1, 14), Position = pos + Vector3.new(0, 12, -5), Color = MapConfig.Colors.HouseRoof, Parent = folder })
 		makePart({ Name = "RoofR", Size = Vector3.new(30, 1, 14), Position = pos + Vector3.new(0, 12, 5), Color = MapConfig.Colors.HouseRoof, Parent = folder })
 		makePart({ Name = "Chimney", Size = Vector3.new(3, 5, 3), Position = pos + Vector3.new(8, 15, 0), Color = Color3.fromRGB(120, 80, 60), Parent = folder })
-		makePart({ Name = "Door", Size = Vector3.new(3.5, 6.5, 0.3), Position = pos + Vector3.new(0, 3.75, -10.2), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, Parent = folder })
+		makePart({ Name = "Door", Size = Vector3.new(3.5, 6.5, 0.3), Position = pos + Vector3.new(0, 3.75, -10.2), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, CanCollide = false, Parent = folder })
 		for _, wx in ipairs({ -9, 9 }) do
 			makePart({ Name = "Window", Size = Vector3.new(3.5, 3.5, 0.3), Position = pos + Vector3.new(wx, 6, -10.15), Color = Color3.fromRGB(180, 220, 255), Material = Enum.Material.Glass, Parent = folder })
 		end
@@ -206,8 +246,8 @@ function MapBuilder.CreateRoleplayDistrict(root)
 		makePart({ Name = "Back", Size = Vector3.new(18, wh, 1), Position = Vector3.new(hx, wh/2 + 0.5, hz + 8), Color = wallColor, Material = MapConfig.Materials.Brick, Parent = house })
 		makePart({ Name = "Left", Size = Vector3.new(1, wh, 16), Position = Vector3.new(hx - 9, wh/2 + 0.5, hz), Color = wallColor, Material = MapConfig.Materials.Brick, Parent = house })
 		makePart({ Name = "Right", Size = Vector3.new(1, wh, 16), Position = Vector3.new(hx + 9, wh/2 + 0.5, hz), Color = wallColor, Material = MapConfig.Materials.Brick, Parent = house })
-		makePart({ Name = "Roof", Size = Vector3.new(20, 1, 18), Position = Vector3.new(hx, 9.5, hz), Color = MapConfig.Colors.HouseRoof, Parent = house })
-		makePart({ Name = "Door", Size = Vector3.new(3.2, 5.8, 0.3), Position = Vector3.new(hx, 3.4, hz - 8.2), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, Parent = house })
+		makePart({ Name = "Roof", Size = Vector3.new(20, 1, 18), Position = Vector3.new(hx, 9.5, hz), Color = isSecret and Color3.fromRGB(80, 20, 20) or MapConfig.Colors.HouseRoof, Parent = house })
+		makePart({ Name = "Door", Size = Vector3.new(3.2, 5.8, 0.3), Position = Vector3.new(hx, 3.4, hz - 8.2), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, CanCollide = false, Parent = house })
 		makePart({ Name = "WinL", Size = Vector3.new(2.8, 2.8, 0.3), Position = Vector3.new(hx - 5.5, 5, hz - 8.15), Color = Color3.fromRGB(170, 210, 255), Material = Enum.Material.Glass, Parent = house })
 		makePart({ Name = "WinR", Size = Vector3.new(2.8, 2.8, 0.3), Position = Vector3.new(hx + 5.5, 5, hz - 8.15), Color = Color3.fromRGB(170, 210, 255), Material = Enum.Material.Glass, Parent = house })
 		makePart({ Name = "Steps", Size = Vector3.new(4.5, 0.8, 2.5), Position = Vector3.new(hx, 0.4, hz - 10), Color = Color3.fromRGB(150, 150, 150), Parent = house })
@@ -232,7 +272,7 @@ function MapBuilder.CreateRoleplayDistrict(root)
 			light.Color = Color3.fromRGB(255, 90, 70)
 			light.Range = 14
 			light.Parent = argDoor
-			makeSign("???", Vector3.new(hx, 4, hz - 9), Vector3.new(3, 1.5, 0.3), house)
+			makeSign("KEEP OUT", Vector3.new(hx, 5, hz - 10.5), Vector3.new(6, 2.5, 0.4), house)
 		end
 	end
 	makePart({ Name = "Street", Size = Vector3.new(160, 1, 12), Position = base + Vector3.new(0, 0, -14), Color = MapConfig.Colors.Path, Material = MapConfig.Materials.Concrete, TopSurface = Enum.SurfaceType.Studs, Parent = folder })
@@ -243,7 +283,7 @@ function MapBuilder.CreateRoleplayDistrict(root)
 	makeTable(base + Vector3.new(70, 0, 32), park, Vector3.new(5, 0.35, 3))
 	makeChair(base + Vector3.new(67, 0, 30), park)
 	makeChair(base + Vector3.new(73, 0, 30), park)
-	makeBloxyColaMachine(base + Vector3.new(0, 0, -8), folder)
+	makeBloxyColaMachine(base + Vector3.new(25, 0, -18), folder)
 	return folder
 end
 
@@ -317,7 +357,7 @@ end
 
 function MapBuilder.BuildFullMap(parent)
 	local root = makeModel(MapConfig.MapName, parent or workspace)
-	print("[MapBuilder] Generando Robloxia 2009 v0.2 (casas + sotano + RP)...")
+	print("[MapBuilder] Generando Robloxia 2009 v0.3...")
 	MapBuilder.CreateBaseAndPlaza(root)
 	MapBuilder.CreateHappyHome(root)
 	MapBuilder.CreateConstructionYard(root)
@@ -325,7 +365,7 @@ function MapBuilder.BuildFullMap(parent)
 	MapBuilder.CreateObby(root)
 	MapBuilder.CreateNature(root)
 	MapBuilder.CreateSpawnAndSecrets(root)
-	print("[MapBuilder] Mapa generado. Casas entrables + sotano en casa #3.")
+	print("[MapBuilder] Listo. Busca ServerStorage: Bloxy Cola Vending + Bloxy")
 	return root
 end
 
