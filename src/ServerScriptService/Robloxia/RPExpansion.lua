@@ -293,6 +293,7 @@ local function refreshBagVisual(player)
 		if data.bagModel then data.bagModel:Destroy() data.bagModel = nil end
 		return
 	end
+	player:SetAttribute("RPGroceryCount", #data.bag)
 	if data.bagModel and data.bagModel.Parent then return end
 	local template = ServerStorage:FindFirstChild("Grocery Bag")
 	local character = player.Character
@@ -917,6 +918,17 @@ function RPExpansion.Init(classicMap)
 			if data.bagModel then data.bagModel:Destroy() end
 			if data.pendingDelivery and data.pendingDelivery.crate then data.pendingDelivery.crate:Destroy() end
 			for _, car in ipairs(data.ownedCars) do if car and car.Parent then car:Destroy() end end
+		end
+			if house and house.Parent then
+			for _, child in ipairs(house:GetChildren()) do
+				if child:GetAttribute("RPPlacedObject") then
+					local state = tvStates[child]
+					if state and state.sound then state.sound:Stop() state.sound:Destroy() end
+					tvStates[child] = nil
+					child:Destroy()
+				end
+			end
+			allFridges[house] = nil
 		end
 		homeByUser[player.UserId] = nil
 		dataByUser[player.UserId] = nil
