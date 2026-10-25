@@ -45,3 +45,9 @@
 - Added work shifts, Money leaderstats, procedural Tech Store, grocery products/bag/refrigerator, TV channel/siren logic, crate-based TV/PC delivery, vehicle purchase/repaint/service prompts, and rare tornado warnings.
 - Backed up the pre-expansion bootstrap and Rojo project configuration under `backups/pre-rp-expansion-2026-10-25/`.
 - Not yet runtime-tested in Roblox Studio; validate model placement, vehicle chassis, sound permissions and all prompts before publishing.
+
+
+## 2026-10-25 — iPad Open Cloud fallback
+- Added a one-file Open Cloud bundle that inlines RPExpansion into the existing MapBootstrap script.
+- Added a Scriptable helper that locates MapBootstrap through Roblox's Engine Instances API, saves the current source locally, and requests a source update after confirmation.
+- Documented beta/API-key/collaborative-session limits; no API key is stored in the repository.

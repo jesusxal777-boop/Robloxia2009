@@ -52,3 +52,7 @@ The roleplay systems are implemented in `src/ServerScriptService/Robloxia/RPExpa
 Features include claimable model houses, default furniture/TV, Money leaderboard, work-shift prompts, a procedural Tech Store, grocery bag capacity and refrigerator storage, crate delivery for purchased TVs/PCs, vehicle purchase/repaint/service prompts, and rare tornado alerts.
 
 **Important:** keep the original place file and its `ServerStorage` models. Rojo syncs the scripts; it does not recreate the binary models from the uploaded `.rbxl`. Test in Studio before publishing.
+
+
+## iPad workflow
+See [docs/IPAD_WORKFLOW.md](docs/IPAD_WORKFLOW.md) for the optional Roblox Open Cloud beta route to update the existing bootstrap Script from iPad. The standard recommended workflow remains Rojo + Roblox Studio; the Open Cloud route is a beta fallback and does not upload a full binary place file.
