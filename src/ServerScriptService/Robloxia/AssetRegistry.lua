@@ -22,6 +22,9 @@ end
 
 local function anchorAll(model: Instance)
 	if MapConfig.AnchorEverything then
+		if model:IsA("BasePart") then
+			model.Anchored = true
+		end
 		for _, part in ipairs(model:GetDescendants()) do
 			if part:IsA("BasePart") then
 				part.Anchored = true
@@ -54,7 +57,7 @@ function AssetRegistry.Load(assetId: number, parent: Instance?): (Instance?, str
 	end
 end
 
-function AssetRegistry.TryHappyHome(parent: Instance): (Instance?, string)
+function AssetRegistry.TryHappyHome(parent: Instance, targetPosition: Vector3?): (Instance?, string)
 	-- Intenta el mejor asset primero
 	local ids = {
 		MapConfig.Assets.HappyHome.Primary,
@@ -64,6 +67,25 @@ function AssetRegistry.TryHappyHome(parent: Instance): (Instance?, string)
 	for _, id in ipairs(ids) do
 		local model, status = AssetRegistry.Load(id, parent)
 		if model then
+			if targetPosition then
+				local ok, boxCFrame, boxSize = pcall(function()
+					if model:IsA("Model") then
+						return model:GetBoundingBox()
+					elseif model:IsA("BasePart") then
+						return model.CFrame, model.Size
+					end
+					error("Happy Home asset has no placeable geometry")
+				end)
+				if ok and boxCFrame and boxSize then
+					local bottomY = boxCFrame.Position.Y - boxSize.Y / 2
+					local offset = Vector3.new(targetPosition.X - boxCFrame.Position.X, targetPosition.Y - bottomY, targetPosition.Z - boxCFrame.Position.Z)
+					if model:IsA("Model") then
+						model:PivotTo(model:GetPivot() + offset)
+					elseif model:IsA("BasePart") then
+						model.CFrame = model.CFrame + offset
+					end
+				end
+			end
 			return model, status
 		end
 	end

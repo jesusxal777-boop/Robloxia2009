@@ -6,7 +6,7 @@
 local MapConfig = {}
 
 MapConfig.MapName = "Robloxia2009"
-MapConfig.Version = "0.5.0"
+MapConfig.Version = "0.6.0"
 MapConfig.ClassicYear = 2009
 
 MapConfig.Assets = {
@@ -54,11 +54,11 @@ MapConfig.Materials = {
 
 MapConfig.Layout = {
 	BaseSize = Vector3.new(512, 1, 512),
-	Spawn = Vector3.new(0, 5, 0),
+	Spawn = Vector3.new(0, 0.5, 0),
 	HappyHomePos = Vector3.new(-80, 0, -40),
 	ConstructionYardPos = Vector3.new(60, 0, -30),
 	RoleplayDistrictPos = Vector3.new(-120, 0, 80),
-	ObbyStart = Vector3.new(120, 5, 40),
+	ObbyStart = Vector3.new(120, 0.5, 40),
 	NaturePos = Vector3.new(0, 0, 140),
 	PlazaCenter = Vector3.new(0, 0, 20),
 	SecretHouseIndex = 3,

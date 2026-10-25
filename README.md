@@ -36,7 +36,7 @@ src/ServerScriptService/Robloxia/
 
 ## ARG Trigger
 
-Enter the 3rd house in the Roleplay District → go down the basement → touch the black door.
+Enter the 3rd house in the Roleplay District and interact with the hatch using the built-in Roblox prompt (E / click / touch). The PC prompt appears in the hidden room; type the displayed code in chat to continue.
 
 ## Notes
 

@@ -13,3 +13,7 @@ Fecha de creación: 2026-10-24
 3. Nunca sobrescribas el único archivo bueno.
 
 El mapa procedural siempre funciona aunque los assets fallen.
+
+## Respaldo de código (Rojo)
+
+Antes de cambios importantes en los módulos, conservar una copia de los archivos originales en `backups/` y trabajar en una rama separada. No reemplazar `main` hasta revisar el diff y probar el mapa en Roblox Studio.

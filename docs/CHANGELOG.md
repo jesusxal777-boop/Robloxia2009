@@ -15,3 +15,12 @@
 - Todo el mapa se genera por código si los assets fallan.
 - El ARG se activa solo al pasar por la puerta del sótano de la casa "secreta".
 - Sin interfaces complejas (el usuario se encarga de UI).
+
+## [0.6.0] — 2026-10-24
+### Corregido
+- Spawn principal y comienzo del obby alineados con la baseplate.
+- Happy Home importada posicionada por su bounding box en vez de quedar en el origen.
+- Muebles con altura consistente y mejor distribución en casas.
+- La casa secreta ahora tiene una abertura real en el suelo para el hatch y un paso abierto en la pared del sótano.
+- Hatch y PC muestran prompts de proximidad compatibles con E y clic/toque.
+- Edd se localiza por HumanoidRootPart/Head y su diálogo del mapa alternativo confirma el giro de la historia.

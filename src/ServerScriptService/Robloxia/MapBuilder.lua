@@ -49,7 +49,7 @@ local function makeSign(text, position, size, parent)
 	label.Text = text
 	label.TextColor3 = MapConfig.Colors.SignText
 	label.TextScaled = true
-	label.Font = Enum.Font.GothamBold
+	label.Font = Enum.Font.ArialBold
 	label.Parent = gui
 	local gui2 = gui:Clone()
 	gui2.Face = Enum.NormalId.Back
@@ -68,10 +68,10 @@ end
 
 local function makeChair(position, parent)
 	local chair = makeModel("Chair", parent)
-	makePart({ Name = "Seat", Size = Vector3.new(2.2, 0.4, 2.2), Position = position + Vector3.new(0, 1.2, 0), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, Parent = chair })
-	makePart({ Name = "Back", Size = Vector3.new(2.2, 2.2, 0.35), Position = position + Vector3.new(0, 2.3, -0.95), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, Parent = chair })
-	for _, off in ipairs({ Vector3.new(-0.8, 0.5, -0.8), Vector3.new(0.8, 0.5, -0.8), Vector3.new(-0.8, 0.5, 0.8), Vector3.new(0.8, 0.5, 0.8) }) do
-		makePart({ Name = "Leg", Size = Vector3.new(0.3, 1, 0.3), Position = position + off, Color = Color3.fromRGB(90, 70, 50), Material = MapConfig.Materials.Wood, Parent = chair })
+	makePart({ Name = "Seat", Size = Vector3.new(2.2, 0.4, 2.2), Position = position + Vector3.new(0, 1.8, 0), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, Parent = chair })
+	makePart({ Name = "Back", Size = Vector3.new(2.2, 2.2, 0.35), Position = position + Vector3.new(0, 2.9, -0.95), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, Parent = chair })
+	for _, off in ipairs({ Vector3.new(-0.8, 0.8, -0.8), Vector3.new(0.8, 0.8, -0.8), Vector3.new(-0.8, 0.8, 0.8), Vector3.new(0.8, 0.8, 0.8) }) do
+		makePart({ Name = "Leg", Size = Vector3.new(0.3, 1.6, 0.3), Position = position + off, Color = Color3.fromRGB(90, 70, 50), Material = MapConfig.Materials.Wood, Parent = chair })
 	end
 	return chair
 end
@@ -142,7 +142,7 @@ local function makeNote(text, position, parent)
 	label.Text = text
 	label.TextColor3 = Color3.fromRGB(40, 30, 20)
 	label.TextScaled = true
-	label.Font = Enum.Font.Gotham
+	label.Font = Enum.Font.Arial
 	label.TextWrapped = true
 	label.Parent = gui
 	return note
@@ -169,12 +169,12 @@ function MapBuilder.CreateBaseAndPlaza(root)
 	for _, offset in ipairs({ Vector3.new(-18, 0, 18), Vector3.new(18, 0, 18), Vector3.new(-18, 0, -12), Vector3.new(18, 0, -12) }) do makeTree(MapConfig.Layout.PlazaCenter + offset, plaza) end
 	makeBloxyColaMachine(MapConfig.Layout.PlazaCenter + Vector3.new(-20, 0, -8), plaza)
 	makeBloxyColaMachine(MapConfig.Layout.PlazaCenter + Vector3.new(20, 0, -8), plaza)
-	makeTable(MapConfig.Layout.PlazaCenter + Vector3.new(0, 0, 8), plaza, Vector3.new(6, 0.4, 3.5))
-	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(-2.5, 0, 6), plaza)
-	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(2.5, 0, 6), plaza)
-	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(-2.5, 0, 10), plaza)
-	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(2.5, 0, 10), plaza)
-	makeBloxyColaCan(MapConfig.Layout.PlazaCenter + Vector3.new(0, 2.4, 8), plaza)
+	makeTable(MapConfig.Layout.PlazaCenter + Vector3.new(0, 0.5, 8), plaza, Vector3.new(6, 0.4, 3.5))
+	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(-2.5, 0.5, 6), plaza)
+	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(2.5, 0.5, 6), plaza)
+	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(-2.5, 0.5, 10), plaza)
+	makeChair(MapConfig.Layout.PlazaCenter + Vector3.new(2.5, 0.5, 10), plaza)
+	makeBloxyColaCan(MapConfig.Layout.PlazaCenter + Vector3.new(0, 2.9, 8), plaza)
 	makeNote("The third house knows.", MapConfig.Layout.PlazaCenter + Vector3.new(-8, 1.5, -15), plaza)
 	return plaza
 end
@@ -182,7 +182,7 @@ end
 function MapBuilder.CreateHappyHome(root)
 	local folder = makeModel("HappyHome", root)
 	local pos = MapConfig.Layout.HappyHomePos
-	if not AssetRegistry.TryHappyHome(folder) then
+	if not AssetRegistry.TryHappyHome(folder, pos) then
 		makePart({ Name = "Floor", Size = Vector3.new(28, 1, 20), Position = pos + Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(140, 140, 140), Parent = folder })
 		local wallH = 10
 		makePart({ Name = "FrontLeft", Size = Vector3.new(10, wallH, 1), Position = pos + Vector3.new(-9, wallH/2+0.5, -10), Color = MapConfig.Colors.HouseWall, Material = MapConfig.Materials.Brick, Parent = folder })
@@ -195,9 +195,14 @@ function MapBuilder.CreateHappyHome(root)
 		makePart({ Name = "RoofR", Size = Vector3.new(30, 1, 14), Position = pos + Vector3.new(0, 12, 5), Color = MapConfig.Colors.HouseRoof, Parent = folder })
 		makePart({ Name = "Door", Size = Vector3.new(3.5, 6.5, 0.3), Position = pos + Vector3.new(0, 3.75, -10.2), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, CanCollide = false, Parent = folder })
 		makePart({ Name = "Steps", Size = Vector3.new(6, 1, 3), Position = pos + Vector3.new(0, 0.5, -12.5), Color = Color3.fromRGB(160, 160, 160), Parent = folder })
-		makeTable(pos + Vector3.new(0, 0, 2), folder, Vector3.new(5, 0.4, 3))
-		makeChair(pos + Vector3.new(-2, 0, 0), folder)
-		makeChair(pos + Vector3.new(2, 0, 0), folder)
+		makeTable(pos + Vector3.new(0, 1, 2), folder, Vector3.new(5, 0.4, 3))
+		makeChair(pos + Vector3.new(-2, 1, 0), folder)
+		makeChair(pos + Vector3.new(2, 1, 0), folder)
+		-- Interior details: a low television console and a simple classic CRT.
+		makePart({ Name = "TVConsole", Size = Vector3.new(6, 1, 1.2), Position = pos + Vector3.new(0, 1.5, 7.2), Color = Color3.fromRGB(110, 75, 48), Material = MapConfig.Materials.Wood, Parent = folder })
+		makePart({ Name = "CRT_TV", Size = Vector3.new(4, 2.5, 1.2), Position = pos + Vector3.new(0, 3.25, 6.8), Color = Color3.fromRGB(45, 45, 45), Material = Enum.Material.Plastic, Parent = folder })
+		makePart({ Name = "CRT_Screen", Size = Vector3.new(3.2, 1.7, 0.08), Position = pos + Vector3.new(0, 3.3, 6.15), Color = Color3.fromRGB(100, 145, 155), Material = Enum.Material.Glass, CanCollide = false, Parent = folder })
+		makePart({ Name = "Bookshelf", Size = Vector3.new(2, 5, 4), Position = pos + Vector3.new(-11.5, 3.5, 1), Color = Color3.fromRGB(110, 75, 48), Material = MapConfig.Materials.Wood, Parent = folder })
 	end
 	makeSign("HAPPY HOME", pos + Vector3.new(0, 5, -24), Vector3.new(10, 4, 1), folder)
 	return folder
@@ -232,7 +237,16 @@ function MapBuilder.CreateRoleplayDistrict(root)
 		local isSecret = (i == MapConfig.Layout.SecretHouseIndex)
 		local wallColor = houseColors[i]
 		local wh = 8
-		makePart({ Name = "Floor", Size = Vector3.new(18, 1, 16), Position = Vector3.new(hx, 0.5, hz), Color = Color3.fromRGB(140,140,140), Parent = house })
+		if isSecret then
+			-- Four floor sections leave a real opening for the hatch; a single floor part
+			-- underneath it would block the player from descending the stairs.
+			makePart({ Name = "FloorFront", Size = Vector3.new(18, 1, 10), Position = Vector3.new(hx, 0.5, hz - 3), Color = Color3.fromRGB(140,140,140), Parent = house })
+			makePart({ Name = "FloorBack", Size = Vector3.new(18, 1, 2), Position = Vector3.new(hx, 0.5, hz + 7), Color = Color3.fromRGB(140,140,140), Parent = house })
+			makePart({ Name = "FloorLeft", Size = Vector3.new(12, 1, 4), Position = Vector3.new(hx - 3, 0.5, hz + 4), Color = Color3.fromRGB(140,140,140), Parent = house })
+			makePart({ Name = "FloorRight", Size = Vector3.new(2, 1, 4), Position = Vector3.new(hx + 8, 0.5, hz + 4), Color = Color3.fromRGB(140,140,140), Parent = house })
+		else
+			makePart({ Name = "Floor", Size = Vector3.new(18, 1, 16), Position = Vector3.new(hx, 0.5, hz), Color = Color3.fromRGB(140,140,140), Parent = house })
+		end
 		makePart({ Name = "FrontLeft", Size = Vector3.new(6.5, wh, 1), Position = Vector3.new(hx-5.75, wh/2+0.5, hz-8), Color = wallColor, Material = MapConfig.Materials.Brick, Parent = house })
 		makePart({ Name = "FrontRight", Size = Vector3.new(6.5, wh, 1), Position = Vector3.new(hx+5.75, wh/2+0.5, hz-8), Color = wallColor, Material = MapConfig.Materials.Brick, Parent = house })
 		makePart({ Name = "FrontTop", Size = Vector3.new(5, 2.5, 1), Position = Vector3.new(hx, 7.25, hz-8), Color = wallColor, Material = MapConfig.Materials.Brick, Parent = house })
@@ -241,29 +255,37 @@ function MapBuilder.CreateRoleplayDistrict(root)
 		makePart({ Name = "Right", Size = Vector3.new(1, wh, 16), Position = Vector3.new(hx+9, wh/2+0.5, hz), Color = wallColor, Material = MapConfig.Materials.Brick, Parent = house })
 		makePart({ Name = "Roof", Size = Vector3.new(20, 1, 18), Position = Vector3.new(hx, 9.5, hz), Color = isSecret and Color3.fromRGB(80,20,20) or MapConfig.Colors.HouseRoof, Parent = house })
 		makePart({ Name = "Door", Size = Vector3.new(3.2, 5.8, 0.3), Position = Vector3.new(hx, 3.4, hz-8.2), Color = MapConfig.Colors.Wood, Material = MapConfig.Materials.Wood, CanCollide = false, Parent = house })
+		makePart({ Name = "DoorKnob", Size = Vector3.new(0.22, 0.22, 0.22), Position = Vector3.new(hx + 1.05, 3.4, hz - 8.42), Color = Color3.fromRGB(205, 170, 70), Material = Enum.Material.Metal, CanCollide = false, Parent = house })
 		makePart({ Name = "WinL", Size = Vector3.new(2.8, 2.8, 0.3), Position = Vector3.new(hx-5.5, 5, hz-8.15), Color = Color3.fromRGB(170,210,255), Material = Enum.Material.Glass, Parent = house })
 		makePart({ Name = "WinR", Size = Vector3.new(2.8, 2.8, 0.3), Position = Vector3.new(hx+5.5, 5, hz-8.15), Color = Color3.fromRGB(170,210,255), Material = Enum.Material.Glass, Parent = house })
 		makePart({ Name = "Steps", Size = Vector3.new(4.5, 0.8, 2.5), Position = Vector3.new(hx, 0.4, hz-10), Color = Color3.fromRGB(150,150,150), Parent = house })
-		makeTable(Vector3.new(hx-3, 0, hz+2), house, Vector3.new(4, 0.35, 2.5))
-		makeChair(Vector3.new(hx-3, 0, hz), house)
-		makeChair(Vector3.new(hx-1, 0, hz), house)
-		makePart({ Name = "Bed", Size = Vector3.new(5, 1, 3), Position = Vector3.new(hx+5, 1, hz+3), Color = Color3.fromRGB(100,120,160), Parent = house })
-		makePart({ Name = "Pillow", Size = Vector3.new(2, 0.5, 2.5), Position = Vector3.new(hx+5, 1.7, hz+3), Color = Color3.fromRGB(240,240,250), Parent = house })
+		makeTable(Vector3.new(hx-3, 1, hz+2), house, Vector3.new(4, 0.4, 2.5))
+		makeChair(Vector3.new(hx-3, 1, hz), house)
+		makeChair(Vector3.new(hx-1, 1, hz), house)
+		local bedZ = isSecret and (hz - 3) or (hz + 3)
+		makePart({ Name = "BedFrame", Size = Vector3.new(5.4, 0.5, 3.4), Position = Vector3.new(hx+5, 1.25, bedZ), Color = Color3.fromRGB(105, 75, 50), Material = MapConfig.Materials.Wood, Parent = house })
+		makePart({ Name = "Bed", Size = Vector3.new(5, 1, 3), Position = Vector3.new(hx+5, 1.75, bedZ), Color = Color3.fromRGB(100,120,160), Parent = house })
+		makePart({ Name = "Pillow", Size = Vector3.new(2, 0.5, 2.5), Position = Vector3.new(hx+5, 2.5, bedZ - 0.15), Color = Color3.fromRGB(240,240,250), Parent = house })
+		makePart({ Name = "Nightstand", Size = Vector3.new(1.8, 1.6, 1.8), Position = Vector3.new(hx+1.8, 1.8, bedZ), Color = Color3.fromRGB(115, 80, 52), Material = MapConfig.Materials.Wood, Parent = house })
+		makePart({ Name = "NightstandLamp", Size = Vector3.new(0.7, 1, 0.7), Position = Vector3.new(hx+1.8, 3.1, bedZ), Color = Color3.fromRGB(235, 220, 160), Material = Enum.Material.Plastic, Parent = house })
 		if isSecret then
 			local basement = makeModel("SecretBasement", house)
-			makePart({ Name = "Hatch", Size = Vector3.new(4, 0.3, 4), Position = Vector3.new(hx+5, 0.65, hz+4), Color = Color3.fromRGB(60,40,30), Material = Enum.Material.Wood, CanCollide = false, Parent = basement })
-			makeSign("DOWN", Vector3.new(hx+5, 2, hz+4), Vector3.new(2.5, 1, 0.2), basement)
-			for s = 1, 8 do
-				makePart({ Name = "Stair"..s, Size = Vector3.new(3.5, 0.8, 1.6), Position = Vector3.new(hx+5, 0.5 - s*1.05, hz+4 + s*1.3), Color = Color3.fromRGB(85,85,85), Material = Enum.Material.Concrete, Parent = basement })
+			makePart({ Name = "Hatch", Size = Vector3.new(4, 0.3, 4), Position = Vector3.new(hx+5, 1.08, hz+4), Color = Color3.fromRGB(60,40,30), Material = Enum.Material.Wood, CanCollide = false, Parent = basement })
+			makeSign("DOWN", Vector3.new(hx+1.5, 2, hz+4), Vector3.new(2.5, 1, 0.2), basement)
+			for step = 1, 8 do
+				makePart({ Name = "Stair"..step, Size = Vector3.new(3.5, 0.8, 1.6), Position = Vector3.new(hx+5, 0.5 - (step-1), hz+4 + step*1.2), Color = Color3.fromRGB(85,85,85), Material = Enum.Material.Concrete, Parent = basement })
 			end
 			local by, bz = -8, hz+14
 			makePart({ Name = "BasementFloor", Size = Vector3.new(18, 1, 16), Position = Vector3.new(hx+5, by, bz), Color = Color3.fromRGB(50,50,50), Parent = basement })
-			makePart({ Name = "BWallN", Size = Vector3.new(18, 8, 1), Position = Vector3.new(hx+5, by+4, bz-8), Color = Color3.fromRGB(40,40,40), Parent = basement })
+			makePart({ Name = "BasementLanding", Size = Vector3.new(3.5, 0.6, 2.5), Position = Vector3.new(hx+5, by+0.9, bz), Color = Color3.fromRGB(70,70,70), Material = Enum.Material.Concrete, Parent = basement })
+			-- Split the north wall around the stair opening instead of blocking the route.
+			makePart({ Name = "BWallN_Left", Size = Vector3.new(7, 8, 1), Position = Vector3.new(hx-0.5, by+4, bz-8), Color = Color3.fromRGB(40,40,40), Parent = basement })
+			makePart({ Name = "BWallN_Right", Size = Vector3.new(7, 8, 1), Position = Vector3.new(hx+10.5, by+4, bz-8), Color = Color3.fromRGB(40,40,40), Parent = basement })
 			makePart({ Name = "BWallS", Size = Vector3.new(18, 8, 1), Position = Vector3.new(hx+5, by+4, bz+8), Color = Color3.fromRGB(40,40,40), Parent = basement })
 			makePart({ Name = "BWallW", Size = Vector3.new(1, 8, 16), Position = Vector3.new(hx-4, by+4, bz), Color = Color3.fromRGB(40,40,40), Parent = basement })
 			makePart({ Name = "BWallE", Size = Vector3.new(1, 8, 16), Position = Vector3.new(hx+14, by+4, bz), Color = Color3.fromRGB(40,40,40), Parent = basement })
-			makeTable(Vector3.new(hx+5, by+0.5, bz), basement, Vector3.new(4, 0.35, 2.5))
-			makeNote("2009 never ended.", Vector3.new(hx+5, by+2.8, bz), basement)
+			makeTable(Vector3.new(hx+10, by+0.5, bz+2), basement, Vector3.new(4, 0.4, 2.5))
+			makeNote("2009 never ended.", Vector3.new(hx+10, by+2.8, bz+2), basement)
 			local argDoor = makePart({ Name = "ARG_Door", Size = Vector3.new(3.5, 6, 0.5), Position = Vector3.new(hx+5, by+3.5, bz+8.2), Color = Color3.fromRGB(12,12,12), Material = Enum.Material.Metal, Parent = basement })
 			argDoor:SetAttribute("IsARGTrigger", true)
 			makeSign("DO NOT ENTER", Vector3.new(hx+5, by+7, bz+7), Vector3.new(5, 2, 0.3), basement)
@@ -284,9 +306,9 @@ function MapBuilder.CreateRoleplayDistrict(root)
 	local park = makeModel("Park", folder)
 	makePart({ Name = "ParkFloor", Size = Vector3.new(32, 1, 22), Position = base + Vector3.new(70, 0, 30), Color = Color3.fromRGB(70,130,60), Material = Enum.Material.Grass, Parent = park })
 	for i = 1, 5 do makeTree(base + Vector3.new(58 + i*6, 0, 28), park) end
-	makeTable(base + Vector3.new(70, 0, 32), park, Vector3.new(5, 0.35, 3))
-	makeChair(base + Vector3.new(67, 0, 30), park)
-	makeChair(base + Vector3.new(73, 0, 30), park)
+	makeTable(base + Vector3.new(70, 0.5, 32), park, Vector3.new(5, 0.4, 3))
+	makeChair(base + Vector3.new(67, 0.5, 30), park)
+	makeChair(base + Vector3.new(73, 0.5, 30), park)
 	makeBloxyColaMachine(base + Vector3.new(40, 0, -20), folder)
 	local secretBox = makeModel("HiddenBox", folder)
 	makePart({ Name = "Crate", Size = Vector3.new(3, 3, 3), Position = base + Vector3.new(-50, 1.5, 20), Color = Color3.fromRGB(120,90,50), Material = MapConfig.Materials.Wood, Parent = secretBox })
@@ -350,8 +372,8 @@ function MapBuilder.CreateSpawnAndSecrets(root)
 	spawn.TopSurface = Enum.SurfaceType.Studs
 	spawn.Parent = spawnFolder
 	local lookout = makeModel("Lookout", secrets)
-	for i = 1, 5 do makePart({ Name = "Tower"..i, Size = Vector3.new(4, 3, 4), Position = Vector3.new(180, i*3, -80), Color = Color3.fromRGB(140,100,60), Material = MapConfig.Materials.Wood, Parent = lookout }) end
-	makePart({ Name = "Platform", Size = Vector3.new(10, 1, 10), Position = Vector3.new(180, 16, -80), Color = Color3.fromRGB(160,120,80), Parent = lookout })
+	for i = 1, 5 do makePart({ Name = "Tower"..i, Size = Vector3.new(4, 3, 4), Position = Vector3.new(180, (i-1)*3 + 1.5, -80), Color = Color3.fromRGB(140,100,60), Material = MapConfig.Materials.Wood, Parent = lookout }) end
+	makePart({ Name = "Platform", Size = Vector3.new(10, 1, 10), Position = Vector3.new(180, 15.5, -80), Color = Color3.fromRGB(160,120,80), Parent = lookout })
 	makeSign("SECRET VIEW", Vector3.new(180, 18, -80), Vector3.new(6, 2, 1), lookout)
 	makeNote("You can see everything from here... almost.", Vector3.new(180, 17, -78), lookout)
 	return spawnFolder, secrets
@@ -359,7 +381,7 @@ end
 
 function MapBuilder.BuildFullMap(parent)
 	local root = makeModel(MapConfig.MapName, parent or workspace)
-	print("[MapBuilder] Generando Robloxia 2009 v0.4...")
+	print("[MapBuilder] Generando Robloxia 2009 v0.6...")
 	MapBuilder.CreateBaseAndPlaza(root)
 	MapBuilder.CreateHappyHome(root)
 	MapBuilder.CreateConstructionYard(root)
