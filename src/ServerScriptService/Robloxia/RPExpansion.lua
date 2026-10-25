@@ -289,11 +289,11 @@ end
 
 local function refreshBagVisual(player)
 	local data = getData(player)
+	player:SetAttribute("RPGroceryCount", #data.bag)
 	if #data.bag == 0 then
 		if data.bagModel then data.bagModel:Destroy() data.bagModel = nil end
 		return
 	end
-	player:SetAttribute("RPGroceryCount", #data.bag)
 	if data.bagModel and data.bagModel.Parent then return end
 	local template = ServerStorage:FindFirstChild("Grocery Bag")
 	local character = player.Character
@@ -356,6 +356,17 @@ local function markPlaced(instance)
 	for _, part in ipairs(getParts(instance)) do
 		part:SetAttribute("RPPlacedObject", true)
 	end
+end
+
+local function placementClear(house, target)
+	for _, part in ipairs(house:GetDescendants()) do
+		if part:IsA("BasePart") and part:GetAttribute("RPPlacedObject") then
+			if (part.Position - target).Magnitude < 4 then
+				return false
+			end
+		end
+	end
+	return true
 end
 
 local function attachTV(tv)
@@ -638,6 +649,10 @@ spawnDeliveryCrate = function(player)
 			end
 			local target = hrp.Position + hrp.CFrame.LookVector * 3
 			if not houseContains(house, target) then notify(owner, "Acércate a una zona libre dentro de la casa.") return end
+			if not placementClear(house, target) then
+				notify(owner, "Ese espacio está ocupado. Muévete a otra zona de la casa.")
+				return
+			end
 			if current.kind == "TV" then
 				local tv = cloneStatic(current.template, Vector3.new(target.X, 0, target.Z), house, "PurchasedTV")
 				if tv then markPlaced(tv) attachTV(tv) end
