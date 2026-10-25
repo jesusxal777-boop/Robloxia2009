@@ -32,3 +32,8 @@
 - Increase prompt range to 16 studs and remove the short hold delay for immediate E/click interaction.
 - Add a clickable E prompt to pick up the sword when the stored asset is a Tool.
 - Preserve the previous ARGSystem.lua at `backups/pre-interaction-fix-2026-10-24/ARGSystem.lua`.
+
+## 2026-10-24 — Edd reveal spawn fix
+- Spawn or relocate Edd into the blood map near the player after the code reveal, so he is visible where the final dialogue starts.
+- Generate a simple blocky fallback NPC if no Edd model was placed in Workspace.
+- Keep the basement message/blackout transition unchanged; only initialize Edd when the reveal map loads.

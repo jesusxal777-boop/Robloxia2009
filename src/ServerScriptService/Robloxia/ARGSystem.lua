@@ -280,6 +280,54 @@ local function createBloodWorld()
 	return blood
 end
 
+local function ensureEddInBloodWorld(blood)
+	-- Edd belongs to the reveal map, not the classic map. Reuse a placed NPC if one exists.
+	local edd = blood:FindFirstChild(MapConfig.ARG.EddName) or workspace:FindFirstChild(MapConfig.ARG.EddName, true)
+	local target = Vector3.new(8, 1, -8)
+	if edd then
+		edd.Parent = blood
+		if edd:IsA("Model") then
+			pcall(function() edd:PivotTo(CFrame.new(target)) end)
+		elseif edd:IsA("BasePart") then
+			edd.CFrame = CFrame.new(target + Vector3.new(0, 2, 0))
+		end
+		return edd
+	end
+
+	-- Keep the ARG playable even when the place has no manually inserted Edd NPC.
+	local model = Instance.new("Model")
+	model.Name = MapConfig.ARG.EddName
+	local function makePart(name, size, offset, color, shape)
+		local part = Instance.new("Part")
+		part.Name = name
+		part.Size = size
+		part.Position = target + offset
+		part.Anchored = true
+		part.CanCollide = false
+		part.Material = Enum.Material.SmoothPlastic
+		part.Color = color
+		if shape then part.Shape = shape end
+		part.Parent = model
+		return part
+	end
+	local dark = Color3.fromRGB(35, 35, 40)
+	local root = makePart("HumanoidRootPart", Vector3.new(2, 2, 1), Vector3.new(0, 2, 0), dark)
+	root.Transparency = 1
+	local torso = makePart("Torso", Vector3.new(2, 2, 1), Vector3.new(0, 2, 0), dark)
+	local head = makePart("Head", Vector3.new(1.2, 1.2, 1.2), Vector3.new(0, 3.6, 0), Color3.fromRGB(190, 177, 150), Enum.PartType.Block)
+	makePart("Left Arm", Vector3.new(1, 2, 1), Vector3.new(-1.5, 2, 0), dark)
+	makePart("Right Arm", Vector3.new(1, 2, 1), Vector3.new(1.5, 2, 0), dark)
+	makePart("Left Leg", Vector3.new(1, 1.5, 1), Vector3.new(-0.5, 0.25, 0), Color3.fromRGB(20, 20, 25))
+	makePart("Right Leg", Vector3.new(1, 1.5, 1), Vector3.new(0.5, 0.25, 0), Color3.fromRGB(20, 20, 25))
+	local humanoid = Instance.new("Humanoid")
+	humanoid.DisplayName = "Edd"
+	humanoid.RequiresNeck = false
+	humanoid.Parent = model
+	model.PrimaryPart = root
+	model.Parent = blood
+	return model
+end
+
 local function setupEddDialogue()
 	local edd = workspace:FindFirstChild(MapConfig.ARG.EddName)
 	if not edd then warn("[ARG] Coloca un NPC llamado Edd en Workspace") return end
@@ -349,7 +397,8 @@ function ARGSystem.TryCode(player, message)
 	local pcroom = workspace:FindFirstChild(MapConfig.ARG.PCRoomName)
 	if pcroom then pcroom:Destroy() end
 	setBloodLighting()
-	createBloodWorld()
+	local blood = createBloodWorld()
+	ensureEddInBloodWorld(blood)
 	setupEddDialogue()
 	task.wait(MapConfig.ARG.ResetDelay)
 	player:LoadCharacter()
@@ -366,7 +415,6 @@ function ARGSystem.Setup(classicMapRoot)
 	classicRoot = classicMapRoot
 	stage = "classic"
 	setClassicLighting()
-	setupEddDialogue()
 	local function attachHatch(part)
 		if not part:IsA("BasePart") then return end
 		if part.Name == "Hatch" then
