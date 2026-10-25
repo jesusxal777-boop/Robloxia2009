@@ -329,7 +329,8 @@ local function ensureEddInBloodWorld(blood)
 end
 
 local function setupEddDialogue()
-	local edd = workspace:FindFirstChild(MapConfig.ARG.EddName)
+	-- Edd is moved inside Robloxia_Blood, so search Workspace descendants.
+	local edd = workspace:FindFirstChild(MapConfig.ARG.EddName, true)
 	if not edd then warn("[ARG] Coloca un NPC llamado Edd en Workspace") return end
 	local part = edd:IsA("BasePart") and edd or edd:FindFirstChild("HumanoidRootPart", true) or edd:FindFirstChild("Head", true) or edd:FindFirstChildWhichIsA("BasePart", true)
 	if not part or not part:IsA("BasePart") then return end
