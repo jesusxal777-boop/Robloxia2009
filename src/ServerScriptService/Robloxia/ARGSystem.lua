@@ -10,6 +10,7 @@ local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local ServerStorage = game:GetService("ServerStorage")
 local MapConfig = require(script.Parent.MapConfig)
+local ProximityPromptService = game:GetService("ProximityPromptService")
 
 local ARGSystem = {}
 local stage = "classic"
@@ -135,8 +136,10 @@ local function createPCRoom()
 		prompt.ActionText = "Examinar"
 		prompt.ObjectText = "PC de 2009"
 		prompt.KeyboardKeyCode = Enum.KeyCode.E
-		prompt.HoldDuration = 0.2
-		prompt.MaxActivationDistance = 10
+		prompt.HoldDuration = 0
+		prompt.MaxActivationDistance = 16
+		prompt.Style = Enum.ProximityPromptStyle.Default
+		prompt.Enabled = true
 		prompt.ClickablePrompt = true
 		prompt.RequiresLineOfSight = false
 		prompt.Parent = promptPart
@@ -229,7 +232,26 @@ local function createBloodWorld()
 		pedestal.Parent = blood
 		sword.Parent = workspace
 		local handle = sword:FindFirstChild("Handle")
-		if handle and handle:IsA("BasePart") then handle.CFrame = CFrame.new(8, 2, -5) end
+		if handle and handle:IsA("BasePart") then
+			handle.CFrame = CFrame.new(8, 2, -5)
+			local swordPrompt = Instance.new("ProximityPrompt")
+			swordPrompt.Name = "SwordInteractionPrompt"
+			swordPrompt.ActionText = "Recoger"
+			swordPrompt.ObjectText = "Espada"
+			swordPrompt.KeyboardKeyCode = Enum.KeyCode.E
+			swordPrompt.HoldDuration = 0
+			swordPrompt.MaxActivationDistance = 16
+			swordPrompt.Style = Enum.ProximityPromptStyle.Default
+			swordPrompt.Enabled = true
+			swordPrompt.ClickablePrompt = true
+			swordPrompt.RequiresLineOfSight = false
+			swordPrompt.Parent = handle
+			swordPrompt.Triggered:Connect(function(player)
+				if sword:IsA("Tool") and sword.Parent == workspace then
+					sword.Parent = player:WaitForChild("Backpack")
+				end
+			end)
+		end
 		print("[ARG] Sword colocada")
 	else
 		warn("[ARG] No hay Sword en ServerStorage")
@@ -269,8 +291,10 @@ local function setupEddDialogue()
 	prompt.ActionText = "Hablar"
 	prompt.ObjectText = "Edd"
 	prompt.KeyboardKeyCode = Enum.KeyCode.E
-	prompt.HoldDuration = 0.2
-	prompt.MaxActivationDistance = 12
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 16
+	prompt.Style = Enum.ProximityPromptStyle.Default
+	prompt.Enabled = true
 	prompt.ClickablePrompt = true
 	prompt.RequiresLineOfSight = false
 	prompt.Parent = part
@@ -338,6 +362,7 @@ function ARGSystem.TryCode(player, message)
 end
 
 function ARGSystem.Setup(classicMapRoot)
+	ProximityPromptService.Enabled = true
 	classicRoot = classicMapRoot
 	stage = "classic"
 	setClassicLighting()
@@ -351,8 +376,10 @@ function ARGSystem.Setup(classicMapRoot)
 				prompt.ActionText = "Entrar"
 				prompt.ObjectText = "Sótano"
 				prompt.KeyboardKeyCode = Enum.KeyCode.E
-				prompt.HoldDuration = 0.2
-				prompt.MaxActivationDistance = 10
+				prompt.HoldDuration = 0
+				prompt.MaxActivationDistance = 16
+				prompt.Style = Enum.ProximityPromptStyle.Default
+				prompt.Enabled = true
 				prompt.ClickablePrompt = true
 				prompt.RequiresLineOfSight = false
 				prompt.Parent = part
