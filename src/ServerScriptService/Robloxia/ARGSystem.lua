@@ -117,12 +117,12 @@ local function createPCRoom()
 	ceil.Anchored = true
 	ceil.Color = Color3.fromRGB(20, 20, 25)
 	ceil.Parent = room
-	local pc = cloneStorage(MapConfig.ARG.StoragePC, Vector3.new(0, 200, -8), room)
+	local pc = cloneStorage(MapConfig.ARG.StoragePC, Vector3.new(0, 200.5, -8), room)
 	if not pc then
 		pc = Instance.new("Part")
 		pc.Name = "PcARG_Fallback"
 		pc.Size = Vector3.new(4, 3, 2)
-		pc.Position = Vector3.new(0, 201.5, -8)
+		pc.Position = Vector3.new(0, 202, -8)
 		pc.Anchored = true
 		pc.Color = Color3.fromRGB(40, 40, 50)
 		pc.Parent = room
@@ -131,11 +131,14 @@ local function createPCRoom()
 	if pc:IsA("Model") then promptPart = pc.PrimaryPart or pc:FindFirstChildWhichIsA("BasePart", true) or pc end
 	if promptPart and promptPart:IsA("BasePart") then
 		local prompt = Instance.new("ProximityPrompt")
-		prompt.ActionText = "Usar"
-		prompt.ObjectText = "PC"
+		prompt.Name = "PCInteractionPrompt"
+		prompt.ActionText = "Examinar"
+		prompt.ObjectText = "PC de 2009"
 		prompt.KeyboardKeyCode = Enum.KeyCode.E
-		prompt.HoldDuration = 0.3
+		prompt.HoldDuration = 0.2
 		prompt.MaxActivationDistance = 10
+		prompt.ClickablePrompt = true
+		prompt.RequiresLineOfSight = false
 		prompt.Parent = promptPart
 		prompt.Triggered:Connect(function(player) ARGSystem.OnPCUsed(player) end)
 	end
@@ -258,20 +261,23 @@ end
 local function setupEddDialogue()
 	local edd = workspace:FindFirstChild(MapConfig.ARG.EddName)
 	if not edd then warn("[ARG] Coloca un NPC llamado Edd en Workspace") return end
-	local part = edd:IsA("BasePart") and edd or edd:FindFirstChildWhichIsA("BasePart", true)
-	if not part then return end
+	local part = edd:IsA("BasePart") and edd or edd:FindFirstChild("HumanoidRootPart", true) or edd:FindFirstChild("Head", true) or edd:FindFirstChildWhichIsA("BasePart", true)
+	if not part or not part:IsA("BasePart") then return end
 	for _, c in ipairs(part:GetChildren()) do if c:IsA("ProximityPrompt") then c:Destroy() end end
 	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "EddDialoguePrompt"
 	prompt.ActionText = "Hablar"
 	prompt.ObjectText = "Edd"
 	prompt.KeyboardKeyCode = Enum.KeyCode.E
 	prompt.HoldDuration = 0.2
 	prompt.MaxActivationDistance = 12
+	prompt.ClickablePrompt = true
+	prompt.RequiresLineOfSight = false
 	prompt.Parent = part
 	prompt.Triggered:Connect(function(player)
 		if stage == "blood" then
-			messageAll("Edd: ...You found the truth. I missed them. So I made them stay.", 5)
-			task.delay(5, function() messageAll("Edd: And now... you're next.", 4) end)
+			messageAll("Edd: You found the truth. I killed everyone in Robloxia. I could not let them leave.", 5)
+			task.delay(5, function() messageAll("Edd: 2009 was supposed to last forever. Now you know why this place is empty.", 4) end)
 		else
 			if not eddFriendlySaid[player.UserId] then
 				eddFriendlySaid[player.UserId] = true
@@ -338,14 +344,17 @@ function ARGSystem.Setup(classicMapRoot)
 	setupEddDialogue()
 	local function attachHatch(part)
 		if not part:IsA("BasePart") then return end
-		if part:GetAttribute("IsARGTrigger") or part.Name == "Hatch" or part.Name == "ARG_Door" then
+		if part.Name == "Hatch" then
 			if not part:FindFirstChildOfClass("ProximityPrompt") then
 				local prompt = Instance.new("ProximityPrompt")
+				prompt.Name = "BasementInteractionPrompt"
 				prompt.ActionText = "Entrar"
-				prompt.ObjectText = "Sotano"
+				prompt.ObjectText = "Sótano"
 				prompt.KeyboardKeyCode = Enum.KeyCode.E
-				prompt.HoldDuration = 0.4
+				prompt.HoldDuration = 0.2
 				prompt.MaxActivationDistance = 10
+				prompt.ClickablePrompt = true
+				prompt.RequiresLineOfSight = false
 				prompt.Parent = part
 				prompt.Triggered:Connect(function(player) ARGSystem.OnHatchUsed(player) end)
 			end
