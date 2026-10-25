@@ -7,6 +7,15 @@
       "Robloxia": {
         "$path": "src/ServerScriptService/Robloxia"
       }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "RPClient": {
+          "$path": "src/StarterPlayer/StarterPlayerScripts/RPClient.client.lua"
+        }
+      }
     }
   }
 }

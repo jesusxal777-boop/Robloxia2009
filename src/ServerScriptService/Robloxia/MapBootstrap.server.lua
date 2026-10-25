@@ -13,6 +13,7 @@ local MapConfig = require(RobloxiaFolder:WaitForChild("MapConfig"))
 local MapBuilder = require(RobloxiaFolder:WaitForChild("MapBuilder"))
 local ARGSystem = require(RobloxiaFolder:WaitForChild("ARGSystem"))
 local AssetRegistry = require(RobloxiaFolder:WaitForChild("AssetRegistry"))
+local RPExpansion = require(RobloxiaFolder:WaitForChild("RPExpansion"))
 
 print("========================================")
 print("  ROBLOXIA 2009 — Map Bootstrap v" .. MapConfig.Version)
@@ -28,6 +29,14 @@ end
 
 -- Construir el mapa clásico
 local classicMap = MapBuilder.BuildFullMap(workspace)
+
+-- Roleplay Expansion (kept separate from the optional ARG).
+local rpOk, rpError = pcall(function()
+	RPExpansion.Init(classicMap)
+end)
+if not rpOk then
+	warn("[Bootstrap] RP Expansion no pudo iniciar: " .. tostring(rpError))
+end
 
 -- Configurar sistema ARG (el sótano secreto)
 if MapConfig.ARG.Enabled then

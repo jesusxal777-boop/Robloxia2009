@@ -1,0 +1,12 @@
+{
+  "name": "Robloxia2009",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Robloxia": {
+        "$path": "src/ServerScriptService/Robloxia"
+      }
+    }
+  }
+}

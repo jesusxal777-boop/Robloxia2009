@@ -37,3 +37,11 @@
 - Spawn or relocate Edd into the blood map near the player after the code reveal, so he is visible where the final dialogue starts.
 - Generate a simple blocky fallback NPC if no Edd model was placed in Workspace.
 - Keep the basement message/blackout transition unchanged; only initialize Edd when the reveal map loads.
+
+
+## 2026-10-25 — RP Expansion foundation
+- Added a separate RPExpansion module and mobile-friendly notification client.
+- Added three claimable RP houses using the existing House, House2 and House3 templates.
+- Added work shifts, Money leaderstats, procedural Tech Store, grocery products/bag/refrigerator, TV channel/siren logic, crate-based TV/PC delivery, vehicle purchase/repaint/service prompts, and rare tornado warnings.
+- Backed up the pre-expansion bootstrap and Rojo project configuration under `backups/pre-rp-expansion-2026-10-25/`.
+- Not yet runtime-tested in Roblox Studio; validate model placement, vehicle chassis, sound permissions and all prompts before publishing.
