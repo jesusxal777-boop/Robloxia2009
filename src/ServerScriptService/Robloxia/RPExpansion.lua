@@ -911,19 +911,27 @@ function RPExpansion.Init(classicMap)
 			house:SetAttribute("OwnerUserId", 0)
 			house:SetAttribute("OwnerName", "")
 			local prompt = homePrompts[house]
-			if prompt then prompt.Enabled = true prompt.ActionText = "Reclamar casa" end
+			if prompt then
+				prompt.Enabled = true
+				prompt.ActionText = "Reclamar casa"
+			end
 		end
 		local data = dataByUser[player.UserId]
 		if data then
 			if data.bagModel then data.bagModel:Destroy() end
 			if data.pendingDelivery and data.pendingDelivery.crate then data.pendingDelivery.crate:Destroy() end
-			for _, car in ipairs(data.ownedCars) do if car and car.Parent then car:Destroy() end end
+			for _, car in ipairs(data.ownedCars) do
+				if car and car.Parent then car:Destroy() end
+			end
 		end
-			if house and house.Parent then
+		if house and house.Parent then
 			for _, child in ipairs(house:GetChildren()) do
 				if child:GetAttribute("RPPlacedObject") then
 					local state = tvStates[child]
-					if state and state.sound then state.sound:Stop() state.sound:Destroy() end
+					if state and state.sound then
+						state.sound:Stop()
+						state.sound:Destroy()
+					end
 					tvStates[child] = nil
 					child:Destroy()
 				end
