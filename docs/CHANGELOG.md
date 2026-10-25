@@ -56,3 +56,9 @@
 ## 2026-10-25 — RP furniture placement
 - Added the real Table template to claimed homes and placeable TV/PC installation on clear table surfaces.
 - Regenerated the one-file Open Cloud bundle from the latest RP module.
+
+
+## 2026-10-25 — RP placement review
+- Improved table ancestry checks for placed objects and adjusted the delivery crate spawn height.
+- Moved the police station away from the procedural obby area to reduce likely map overlap.
+- Regenerated the iPad Open Cloud bundle from the current bootstrap and RP module.

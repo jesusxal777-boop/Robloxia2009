@@ -62,7 +62,7 @@ local BUILDINGS = {
 	{ template = "Dealership", name = "RP_Dealership", position = Vector3.new(70, 0, -170), job = "Dealership" },
 	{ template = "Car Repair Shop", name = "RP_CarRepairShop", position = Vector3.new(145, 0, 150) },
 	{ template = "CarWash", name = "RP_CarWash", position = Vector3.new(65, 0, 190) },
-	{ template = "Police station", name = "RP_PoliceStation", position = Vector3.new(200, 0, 65) },
+	{ template = "Police station", name = "RP_PoliceStation", position = Vector3.new(205, 0, -60) },
 }
 
 local FOOD = {
@@ -441,11 +441,14 @@ end
 local function placementClear(house, target)
 	for _, part in ipairs(house:GetDescendants()) do
 		if part:IsA("BasePart") and part:GetAttribute("RPPlacedObject") then
-			local tableAncestor = part:FindFirstAncestorWhichIsA("Model")
+			local ancestor = part.Parent
 			local onTable = false
-			while tableAncestor do
-				if isTableModel(tableAncestor) then onTable = true break end
-				tableAncestor = tableAncestor.Parent and tableAncestor.Parent:FindFirstAncestorWhichIsA("Model") or nil
+			while ancestor and ancestor ~= house do
+				if ancestor:IsA("Model") and isTableModel(ancestor) then
+					onTable = true
+					break
+				end
+				ancestor = ancestor.Parent
 			end
 			if not onTable and not part:GetAttribute("RPTableSurface") and (part.Position - target).Magnitude < 4 then
 				return false
@@ -733,7 +736,7 @@ spawnDeliveryCrate = function(player)
 		stripScripts(crate)
 		crate.Name = "DeliveryCrate_" .. player.UserId
 		crate.Parent = expansionRoot
-		moveBottomTo(crate, root.Position + Vector3.new(0, -2, -3))
+		moveBottomTo(crate, root.Position + Vector3.new(0, -3, -3))
 		for _, part in ipairs(getParts(crate)) do part.Anchored = true end
 	else
 		crate = createCrateFallback("DeliveryCrate_" .. player.UserId, expansionRoot)
