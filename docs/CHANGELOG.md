@@ -51,3 +51,8 @@
 - Added a one-file Open Cloud bundle that inlines RPExpansion into the existing MapBootstrap script.
 - Added a Scriptable helper that locates MapBootstrap through Roblox's Engine Instances API, saves the current source locally, and requests a source update after confirmation.
 - Documented beta/API-key/collaborative-session limits; no API key is stored in the repository.
+
+
+## 2026-10-25 — RP furniture placement
+- Added the real Table template to claimed homes and placeable TV/PC installation on clear table surfaces.
+- Regenerated the one-file Open Cloud bundle from the latest RP module.

@@ -47,7 +47,7 @@ Enter the 3rd house in the Roleplay District and interact with the hatch using t
 
 ## RP Expansion (experimental)
 
-The roleplay systems are implemented in `src/ServerScriptService/Robloxia/RPExpansion.lua` and start automatically after the procedural map is built. The module clones the named RP assets from `ServerStorage`; it does not embed those models in the Rojo source tree.
+The roleplay systems are implemented in `src/ServerScriptService/Robloxia/RPExpansion.lua` and start automatically after the procedural map is built. The module clones the named RP assets from `ServerStorage`; it does not embed those models in the Rojo source tree. Purchased TVs and PCs must be installed on an available table surface inside the player's claimed house.
 
 Features include claimable model houses, default furniture/TV, Money leaderboard, work-shift prompts, a procedural Tech Store, grocery bag capacity and refrigerator storage, crate delivery for purchased TVs/PCs, vehicle purchase/repaint/service prompts, and rare tornado alerts.
 

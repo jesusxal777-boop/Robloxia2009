@@ -358,15 +358,64 @@ local function markPlaced(instance)
 	end
 end
 
+local function isTableModel(instance)
+	if not instance:IsA("Model") then return false end
+	local name = string.lower(instance.Name)
+	return name == "table" or string.find(name, "table") ~= nil
+end
+
+local function getTableTop(tableModel)
+	if not tableModel then return nil end
+	local preferred = tableModel:FindFirstChild("Top", true)
+		or tableModel:FindFirstChild("TableTop", true)
+		or tableModel:FindFirstChild("Surface", true)
+	if preferred and preferred:IsA("BasePart") then return preferred end
+	local best, bestArea = nil, 0
+	for _, part in ipairs(getParts(tableModel)) do
+		local area = part.Size.X * part.Size.Z
+		if part.Size.X >= part.Size.Y and part.Size.Z >= part.Size.Y and area > bestArea then
+			best, bestArea = part, area
+		end
+	end
+	return best
+end
+
 local function placementClear(house, target)
 	for _, part in ipairs(house:GetDescendants()) do
 		if part:IsA("BasePart") and part:GetAttribute("RPPlacedObject") then
-			if (part.Position - target).Magnitude < 4 then
+			local tableAncestor = part:FindFirstAncestorWhichIsA("Model")
+			local onTable = false
+			while tableAncestor do
+				if isTableModel(tableAncestor) then onTable = true break end
+				tableAncestor = tableAncestor.Parent and tableAncestor.Parent:FindFirstAncestorWhichIsA("Model") or nil
+			end
+			if not onTable and not part:GetAttribute("RPTableSurface") and (part.Position - target).Magnitude < 4 then
 				return false
 			end
 		end
 	end
 	return true
+end
+
+local function findTableSurface(house, nearPosition)
+	local candidates = {}
+	for _, descendant in ipairs(house:GetDescendants()) do
+		if descendant:IsA("Model") and isTableModel(descendant) then
+			local top = getTableTop(descendant)
+			if top then candidates[top] = true end
+		elseif descendant:IsA("BasePart") and descendant:GetAttribute("RPTableSurface") then
+			candidates[descendant] = true
+		end
+	end
+	local best, bestDistance
+	for part in pairs(candidates) do
+		local target = Vector3.new(part.Position.X, part.Position.Y + part.Size.Y / 2, part.Position.Z)
+		local distance = (part.Position - nearPosition).Magnitude
+		if distance <= 10 and placementClear(house, target) and (not bestDistance or distance < bestDistance) then
+			best, bestDistance = part, distance
+		end
+	end
+	return best, bestDistance
 end
 
 local function attachTV(tv)
@@ -531,14 +580,25 @@ local function claimHouse(player, house)
 		prompt.ObjectText = house.Name
 		prompt.Enabled = false
 	end
-	-- These are the owner's default furniture and television. They are children of the house model.
+	-- Default furniture stays inside the claimed house. The TV is placed on the supplied table model.
 	local sofa = placeAssetInHouse("Sofa", house, -0.2, 0.15, "OwnerSofa")
 	if sofa then attachSofa(sofa, house) end
 	local fridge = placeAssetInHouse("Fridge", house, 0.23, 0.15, "OwnerFridge")
 	if fridge then attachFridge(fridge, house) end
-	local tv = placeAssetInHouse("TV1", house, 0, -0.18, "OwnerTV")
-	if tv then attachTV(tv) end
-	notify(player, "¡Casa reclamada! Recibiste sofá, refrigerador y TV1.")
+	local tableModel = placeAssetInHouse("Table", house, 0, 0.02, "OwnerTable")
+	if tableModel then markPlaced(tableModel) end
+	local tableTop = getTableTop(tableModel)
+	local tv
+	if tableTop then
+		tableTop:SetAttribute("RPTableSurface", true)
+		local tvTarget = Vector3.new(tableTop.Position.X, tableTop.Position.Y + tableTop.Size.Y / 2, tableTop.Position.Z)
+		tv = cloneStatic("TV1", tvTarget, house, "OwnerTV")
+		if tv then markPlaced(tv) attachTV(tv) end
+	else
+		tv = placeAssetInHouse("TV1", house, 0, -0.18, "OwnerTV")
+		if tv then attachTV(tv) end
+	end
+	notify(player, "¡Casa reclamada! Recibiste sofá, refrigerador, mesa y TV1.")
 end
 
 local function addJobPrompt(model, jobName)
@@ -647,17 +707,24 @@ spawnDeliveryCrate = function(player)
 				notify(owner, "Entra en tu casa para colocar el objeto.")
 				return
 			end
-			local target = hrp.Position + hrp.CFrame.LookVector * 3
-			if not houseContains(house, target) then notify(owner, "Acércate a una zona libre dentro de la casa.") return end
+			local requestedPosition = hrp.Position + hrp.CFrame.LookVector * 3
+			if not houseContains(house, requestedPosition) then notify(owner, "Acércate a una zona libre dentro de la casa.") return end
+			local tableTop = findTableSurface(house, requestedPosition)
+			if not tableTop then
+				notify(owner, "Necesitas una mesa con espacio libre para instalar la TV o el PC.")
+				return
+			end
+			local target = Vector3.new(tableTop.Position.X, tableTop.Position.Y + tableTop.Size.Y / 2, tableTop.Position.Z)
+			if not houseContains(house, target) then notify(owner, "La mesa está fuera de la zona interior de la casa.") return end
 			if not placementClear(house, target) then
-				notify(owner, "Ese espacio está ocupado. Muévete a otra zona de la casa.")
+				notify(owner, "Ese espacio está ocupado. Acércate a otra mesa o despeja la superficie.")
 				return
 			end
 			if current.kind == "TV" then
-				local tv = cloneStatic(current.template, Vector3.new(target.X, 0, target.Z), house, "PurchasedTV")
+				local tv = cloneStatic(current.template, target, house, "PurchasedTV")
 				if tv then markPlaced(tv) attachTV(tv) end
 			elseif current.kind == "PC" then
-				createPC(house, Vector3.new(target.X, 0, target.Z))
+				createPC(house, target)
 			end
 			crate:Destroy()
 			currentData.pendingDelivery = nil

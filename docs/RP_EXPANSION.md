@@ -9,8 +9,8 @@
 - Three claimable houses using `House`, `House2`, `House3`; one owner at a time. A house is released when its owner leaves.
 - Money leaderboard, shift payouts with a server-side cooldown, grocery purchases and five-item bag capacity.
 - Refrigerator storage for refrigerated foods, with a maximum of eight items and individual withdrawal prompts.
-- TV1 supplied with the house, TV on/off interaction, RetroRobloxChannel sound and emergency siren display support.
-- Procedural Tech Store and PC fallback model; purchased TVs/PCs use `Wood Crate`/`Crate` templates and can be installed while the player is inside their home.
+- TV1 supplied on the default table when claiming a house, TV on/off interaction, RetroRobloxChannel sound and emergency siren display support.
+- Procedural Tech Store and PC fallback model; purchased TVs/PCs use `Wood Crate`/`Crate` templates and can be installed on a nearby table while the player is inside their home. Placement rejects occupied surfaces.
 - Car 1–4 purchase prompts using `ServerStorage/2009Cars`, selective repainting by body-part names, and repair/car-wash service prompts.
 - Rare tornado event: attempts to load asset 7019541974 and falls back to a procedural funnel; siren asset 90738042 and TV channel sound 15930255433 are configured.
 
